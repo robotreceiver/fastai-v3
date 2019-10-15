@@ -1,4 +1,4 @@
-import aiohttp
+# import aiohttp
 import asyncio
 import uvicorn
 from fastai import *
@@ -13,26 +13,27 @@ export_file_url = 'https://www.dropbox.com/s/6bgq8t6yextloqp/export.pkl?raw=1'
 export_file_name = 'carmodel.pkl' #'export.pkl'
 
 classes = ['toyota', 'honda']
-path = Path(__file__) / models #.parent
+path = Path(__file__).parent #/ 'models' #.parent
+modelpath = path / 'models'
 
 app = Starlette()
 app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_headers=['X-Requested-With', 'Content-Type'])
 app.mount('/static', StaticFiles(directory='app/static'))
 
 
-async def download_file(url, dest):
-    if dest.exists(): return
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as response:
-            data = await response.read()
-            with open(dest, 'wb') as f:
-                f.write(data)
+# async def download_file(url, dest):
+#     if dest.exists(): return
+#     async with aiohttp.ClientSession() as session:
+#         async with session.get(url) as response:
+#             data = await response.read()
+#             with open(dest, 'wb') as f:
+#                 f.write(data)
 
 
 async def setup_learner():
     #await download_file(export_file_url, path / export_file_name)
     try:
-        learn = load_learner(path, export_file_name)
+        learn = load_learner(modelpath, export_file_name)
         return learn
     except RuntimeError as e:
         if len(e.args) > 0 and 'CPU-only machine' in e.args[0]:
@@ -65,5 +66,8 @@ async def analyze(request):
 
 
 if __name__ == '__main__':
-    if 'serve' in sys.argv:
-        uvicorn.run(app=app, host='0.0.0.0', port=5000, log_level="info")
+    uvicorn.run(app, host='0.0.0.0', port=8000)
+
+# if __name__ == '__main__':
+#     if 'serve' in sys.argv:
+#         uvicorn.run(app=app, host='0.0.0.0', port=5000, log_level="info")
