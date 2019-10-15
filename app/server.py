@@ -1,4 +1,3 @@
-# import aiohttp
 import asyncio
 import uvicorn
 from fastai import *
@@ -21,17 +20,9 @@ app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_headers=['X-Reques
 app.mount('/static', StaticFiles(directory='app/static'))
 
 
-# async def download_file(url, dest):
-#     if dest.exists(): return
-#     async with aiohttp.ClientSession() as session:
-#         async with session.get(url) as response:
-#             data = await response.read()
-#             with open(dest, 'wb') as f:
-#                 f.write(data)
-
 
 async def setup_learner():
-    #await download_file(export_file_url, path / export_file_name)
+
     try:
         learn = load_learner(modelpath, export_file_name)
         return learn
